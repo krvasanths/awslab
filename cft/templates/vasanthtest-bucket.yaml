@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: S3 bucket named vasanthtest
+
+Resources:
+  VasanthTestBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: vasanthtest
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+Outputs:
+  BucketName:
+    Description: Name of the S3 bucket
+    Value: !Ref VasanthTestBucket
+  BucketArn:
+    Description: ARN of the S3 bucket
+    Value: !GetAtt VasanthTestBucket.Arn

@@ -1,0 +1,123 @@
+# AWS deployment pipeline – runs only when changes are merged to main (PR merge).
+# Does not run on feature branches or on open/update of PRs.
+
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'aws-service-enablement/**'
+      - 'cft/**'
+      - 'tf/**'
+      - '.github/workflows/deploy.yml'
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      enablement: ${{ steps.filter.outputs.enablement }}
+      cft: ${{ steps.filter.outputs.cft }}
+      tf: ${{ steps.filter.outputs.tf }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            enablement: 'aws-service-enablement/**'
+            cft: 'cft/**'
+            tf: 'tf/**'
+
+  deploy-enablement:
+    name: Deploy AWS enablement (CFT)
+    needs: changes
+    if: needs.changes.outputs.enablement == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: aws-service-enablement
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy enablement stack (placeholder)
+        run: |
+          if [ -n "$(find templates -name '*.yaml' -o -name '*.yml' 2>/dev/null)" ]; then
+            echo "Deploy enablement CFT here (e.g. aws cloudformation deploy ...)"
+          else
+            echo "No enablement templates to deploy yet."
+          fi
+
+  deploy-cft:
+    name: Deploy CFT stacks
+    needs: changes
+    if: needs.changes.outputs.cft == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy CloudFormation stacks
+        run: |
+          cd cft/templates
+          for template in *.yaml *.yml *.json; do
+            [ -f "$template" ] || continue
+            stack_name="awslab-$(basename "$template" | sed 's/\.[^.]*$//')"
+            echo "Deploying stack: $stack_name from $template"
+            aws cloudformation deploy \
+              --template-file "$template" \
+              --stack-name "$stack_name" \
+              --capabilities CAPABILITY_NAMED_IAM \
+              --no-fail-on-empty-changeset
+          done
+
+  # Terraform deployment disabled – uncomment when ready to deploy tf/ via pipeline
+  # deploy-tf:
+  #   name: Deploy Terraform
+  #   needs: changes
+  #   if: needs.changes.outputs.tf == 'true'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v3
+  #       with:
+  #         terraform_version: 1.6.0
+  #
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v4
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: ${{ env.AWS_REGION }}
+  #
+  #     - name: Terraform init
+  #       working-directory: tf
+  #       run: terraform init -input=false
+  #
+  #     - name: Terraform plan
+  #       working-directory: tf
+  #       run: terraform plan -input=false -out=tfplan
+  #
+  #     - name: Terraform apply
+  #       working-directory: tf
+  #       run: terraform apply -input=false -auto-approve tfplan
