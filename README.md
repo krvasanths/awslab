@@ -18,6 +18,8 @@ Repository for AWS infrastructure: CloudFormation templates (CFT) and Terraform 
 
 See [.github/workflows/README.md](.github/workflows/README.md) for trigger rules, jobs, and how to set AWS credentials (OIDC or secrets).
 
+**Least-privilege IAM:** Permissions are documented **per AWS service** under [docs/iam/](docs/iam/) (index in [docs/iam/README.md](docs/iam/README.md)), with policy JSON in [docs/iam-policies/](docs/iam-policies/). Each service doc maps to the CFT that use it. Combined policy: [docs/iam-policies/deploy-user-minimal-policy.json](docs/iam-policies/deploy-user-minimal-policy.json).
+
 ## Quick start
 
 1. **Enablement:** Add CFT under `aws-service-enablement/templates/` when you need IAM or permission boundaries.
