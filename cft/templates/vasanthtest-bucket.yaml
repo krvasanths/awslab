@@ -1,11 +1,12 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: S3 bucket named vasanthtest
+Description: S3 bucket vasanthtest (name includes account ID for global uniqueness)
 
 Resources:
   VasanthTestBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: vasanthtest
+      # S3 bucket names are globally unique; account ID ensures no conflict
+      BucketName: !Sub "vasanthtest-${AWS::AccountId}"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
