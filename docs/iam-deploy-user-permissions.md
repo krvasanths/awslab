@@ -8,6 +8,8 @@ This doc has been **split by AWS service** for easier maintenance and to map per
 |---------|-----|--------|
 | CloudFormation | [iam/cloudformation.md](iam/cloudformation.md) | [iam-policies/cloudformation.json](iam-policies/cloudformation.json) |
 | S3 | [iam/s3.md](iam/s3.md) | [iam-policies/s3.json](iam-policies/s3.json) |
+| Lambda | [iam/lambda.md](iam/lambda.md) | [iam-policies/lambda.json](iam-policies/lambda.json) |
+| API Gateway | [iam/apigateway.md](iam/apigateway.md) | [iam-policies/apigateway.json](iam-policies/apigateway.json) |
 
 **Combined policy (all services):** [iam-policies/deploy-user-minimal-policy.json](iam-policies/deploy-user-minimal-policy.json)
 

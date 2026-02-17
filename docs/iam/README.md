@@ -10,8 +10,10 @@ Least-privilege permissions for the user or role that runs the deployment pipeli
 |-------------------|-----|-------------|------------|
 | **CloudFormation** | [cloudformation.md](cloudformation.md) | [../iam-policies/cloudformation.json](../iam-policies/cloudformation.json) | All stack deploys (pipeline) |
 | **S3**            | [s3.md](s3.md) | [../iam-policies/s3.json](../iam-policies/s3.json) | [vasanthtest-bucket.yaml](../../cft/templates/vasanthtest-bucket.yaml) |
+| **Lambda** | [lambda.md](lambda.md) | [../iam-policies/lambda.json](../iam-policies/lambda.json) | [api-gateway-lambda.yaml](../../cft/templates/api-gateway-lambda.yaml) |
+| **API Gateway** | [apigateway.md](apigateway.md) | [../iam-policies/apigateway.json](../iam-policies/apigateway.json) | [api-gateway-lambda.yaml](../../cft/templates/api-gateway-lambda.yaml) |
 
-When you add a new CFT that uses another service (e.g. Lambda, IAM), add a new row here and a new `docs/iam/<service>.md` + `docs/iam-policies/<service>.json`.
+When you add a new CFT that uses another service, add a new row here and a new `docs/iam/<service>.md` + `docs/iam-policies/<service>.json`.
 
 ---
 
@@ -27,6 +29,7 @@ Attach one policy per service so you can grant only what each CFT needs:
 
 - Attach [cloudformation.json](../iam-policies/cloudformation.json) for stack lifecycle.
 - Attach [s3.json](../iam-policies/s3.json) when you deploy templates that create or use S3 buckets.
+- Attach [lambda.json](../iam-policies/lambda.json) and [apigateway.json](../iam-policies/apigateway.json) when you deploy the API Gateway + Lambda stack (or use [lambda-apigateway-iam.json](../iam-policies/lambda-apigateway-iam.json) for both in one policy).
 
 **CLI example (combined):**
 
