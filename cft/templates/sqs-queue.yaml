@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: SQS queue for awslab
+
+Resources:
+  Queue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "awslab-queue-${AWS::AccountId}"
+      VisibilityTimeout: 30
+      MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 0
+
+Outputs:
+  QueueUrl:
+    Description: URL of the SQS queue
+    Value: !Ref Queue
+    Export:
+      Name: !Sub "${AWS::StackName}-QueueUrl"
+  QueueArn:
+    Description: ARN of the SQS queue
+    Value: !GetAtt Queue.Arn

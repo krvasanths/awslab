@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: SNS topic for awslab
+
+Resources:
+  Topic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "awslab-topic-${AWS::AccountId}"
+      DisplayName: awslab SNS topic
+
+Outputs:
+  TopicArn:
+    Description: ARN of the SNS topic
+    Value: !Ref Topic
+    Export:
+      Name: !Sub "${AWS::StackName}-TopicArn"
+  TopicName:
+    Description: Name of the SNS topic
+    Value: !GetAtt Topic.TopicName

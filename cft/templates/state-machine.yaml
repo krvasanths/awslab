@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Step Functions state machine for awslab
+
+Resources:
+  StateMachineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "awslab-state-machine-${AWS::StackName}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: states.amazonaws.com
+            Action: sts:AssumeRole
+
+  StateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: !Sub "awslab-state-machine-${AWS::StackName}"
+      RoleArn: !GetAtt StateMachineRole.Arn
+      DefinitionString: |
+        {
+          "Comment": "Awslab simple state machine",
+          "StartAt": "PassState",
+          "States": {
+            "PassState": {
+              "Type": "Pass",
+              "Result": "Done",
+              "ResultPath": "$.result",
+              "End": true
+            }
+          }
+        }
+
+Outputs:
+  StateMachineArn:
+    Description: ARN of the state machine
+    Value: !Ref StateMachine
+    Export:
+      Name: !Sub "${AWS::StackName}-StateMachineArn"
+  StateMachineName:
+    Description: Name of the state machine
+    Value: !GetAtt StateMachine.Name
